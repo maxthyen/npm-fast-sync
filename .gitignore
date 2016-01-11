@@ -1,0 +1,19 @@
+# operating system artifacts
+################################################################################
+
+# OSX Junk
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# windows junk
+desktop.ini
+
+# nodejs artifacts
+################################################################################
+
+# npm
+node_modules
+npm-debug.log
+*.es5.js
