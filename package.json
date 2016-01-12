@@ -1,19 +1,23 @@
 {
   "name": "npm-fast-sync",
-  "version": "1.0.0",
   "description": "Incremental npm install with downgrade support.",
-  "main": "lib/index.js",
-  "bin": "bin/npm-fast-sync.js",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=4.2",
+    "npm": ">=2"
+  },
+  "author": "Julian Diaz <julian.diaz@onefinancialholdings.com>",
   "scripts": {
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "main": "lib/index.js",
+  "bin": "bin/npm-fast-sync.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/onefinancial/npm-fast-sync"
   },
-  "author": "Julian Diaz <julian.diaz@onefinancialholdings.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/onefinancial/npm-fast-sync/issues"
