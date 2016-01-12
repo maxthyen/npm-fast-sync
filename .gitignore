@@ -16,3 +16,6 @@ desktop.ini
 # npm
 node_modules
 npm-debug.log
+
+# compiled
+lib/

@@ -2,12 +2,10 @@
   "name": "npm-fast-sync",
   "version": "1.0.0",
   "description": "Incremental npm install with downgrade support.",
-  "main": "index.js",
-  "bin": {
-    "npm-fast-sync": "./index-es5.js"
-  },
+  "main": "lib/index.js",
+  "bin": "bin/npm-fast-sync.js",
   "scripts": {
-    "compile": "babel -o npm-fast-sync.es5.js npm-fast-sync.js",
+    "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
