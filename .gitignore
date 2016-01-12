@@ -16,4 +16,3 @@ desktop.ini
 # npm
 node_modules
 npm-debug.log
-*.es5.js
