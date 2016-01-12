@@ -8,11 +8,12 @@ import semver from 'semver';
 
 Rx.config.longStackSupport = true;
 
-const readFile = Rx.Observable.fromNodeCallback(fs.readFile);
+// Wrap some node functions to give observable versions.
+const readFileRx = Rx.Observable.fromNodeCallback(fs.readFile);
 
-const rmDir = Rx.Observable.fromNodeCallback(rimraf);
+const rimrafRx = Rx.Observable.fromNodeCallback(rimraf);
 
-const spawn = (command, args) => Rx.Observable.create((o) => {
+const spawnRx = (command, args) => Rx.Observable.create((o) => {
   let errored = false;
   childProcess.spawn(command, args, {env: process.env, stdio: 'inherit'})
   .on('error', (err) => {
@@ -35,10 +36,15 @@ const spawn = (command, args) => Rx.Observable.create((o) => {
 
 const parseJson = (data) => JSON.parse(data);
 
-const mergePackageDeps = (packageJson) => Object.assign({}, packageJson.devDependencies, packageJson.dependencies);
+// Take package data and spit out a merged version of all its deps.
+const mergePackageDeps = (packageJson) =>
+  Object.assign({}, packageJson.devDependencies, packageJson.dependencies);
 
 const getPackageVersion = _.partial(_.get, _, 'version');
 
+// Take a tuple of [moduleName, spec], and returns a tuple of [moduleName,
+// installSpec, versionSpec], where installSpec is the arg to pass to
+// `npm install` and versionSpec is the actual semver spec.
 const validateSpec = ([moduleName, spec]) => {
   if (_.contains(spec, '#')) {
     return [moduleName, spec, semver.valid(spec.split('#')[1])];
@@ -46,12 +52,21 @@ const validateSpec = ([moduleName, spec]) => {
   return [moduleName, `${moduleName}@${spec}`, spec];
 };
 
-const getDepVersion = ([moduleName]) => readFile(path.join(process.cwd(), 'node_modules', moduleName, 'package.json'))
-.catch(Rx.Observable.return(null))
-.select(parseJson)
-.select(getPackageVersion);
+// Given a module name go into node_modules and return the installed module's
+// version or `null` if it isn't installed.
+const getDepVersion = ([moduleName]) =>
+  readFileRx(path.join(
+    process.cwd(),
+    'node_modules',
+    moduleName,
+    'package.json'
+  ))
+  .catch(Rx.Observable.return(null))
+  .select(parseJson)
+  .select(getPackageVersion);
 
-const installUnsatisfied = readFile(path.join(process.cwd(), 'package.json'))
+// Go through package.json and run `npm install` for all unsatisfied deps.
+const installUnsatisfied = readFileRx(path.join(process.cwd(), 'package.json'))
 .catch(err => {
   console.error('could not read package.json!', err);
   return Rx.Observable.empty();
@@ -60,16 +75,29 @@ const installUnsatisfied = readFile(path.join(process.cwd(), 'package.json'))
 .select(mergePackageDeps)
 .selectMany(_.pairs)
 .select(validateSpec)
-.selectMany(getDepVersion, ([moduleName, dep, spec], version) => [moduleName, dep, semver.satisfies(version, spec)])
-.selectMany(([moduleName, dep, satisfied]) => satisfied ? [] : [[moduleName, dep]])
+// Transform the versionSpec into a bool; true if the spec is satisfied.
 .selectMany(
-  ([moduleName]) => rmDir(path.join(process.cwd(), 'node_modules', moduleName)),
-  (t) => t[1]
+  getDepVersion,
+  ([moduleName, installSpec, versionSpec], version) =>
+    [moduleName, installSpec, semver.satisfies(version, versionSpec)]
+)
+.selectMany(
+  ([moduleName, installSpec, satisfied]) =>
+    satisfied ? [] : [[moduleName, installSpec]]
+)
+// "Uninstall" the module by wiping out the directory. This runs in parallel and
+// is quite fast!
+.selectMany(
+  ([moduleName]) =>
+    rimrafRx(path.join(process.cwd(), 'node_modules', moduleName)),
+  (specs) => specs[1]
 )
 .reduce((acc, spec) => acc.concat(spec), [])
-.selectMany((specs) => specs.length > 0 ? spawn('npm', ['install'].concat(specs)) : []);
+.selectMany(
+  (specs) => specs.length > 0 ? spawnRx('npm', ['install'].concat(specs)) : []
+);
 
-spawn('npm', ['prune'])
+spawnRx('npm', ['prune'])
 .concat(installUnsatisfied)
 .subscribe(
   console.log,
