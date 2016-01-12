@@ -12,7 +12,7 @@ git+ssh://git@github.com/private-company/private-module.git#3.2.1
 ## Installing
 
 ```shell
-npm install -g git+ssh://git@github.com/onefinancial/npm-fast-sync.git
+npm install -g npm-fast-sync
 ```
 
 ## Usage
