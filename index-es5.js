@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-require('./npmi.es5');
+require('./npm-fast-sync.es5');

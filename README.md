@@ -1,4 +1,4 @@
-# npmi
+# npm-fast-sync
 > Incremental npm install with downgrade support.
 
 This script is a *much* faster alternative to `npm install` when you want to keep your **node_modules** folder up to date.
@@ -12,16 +12,16 @@ git+ssh://git@github.com/private-company/private-module.git#3.2.1
 ## Installing
 
 ```shell
-npm install -g git+ssh://git@github.com/onefinancial/npmi.git
+npm install -g git+ssh://git@github.com/onefinancial/npm-fast-sync.git
 ```
 
 ## Usage
 
-Just run `npmi` and this script will take care of the rest!
+Just run `npm-fast-sync` and this script will take care of the rest!
 
 ```shell
 cd ~/my/node/project
-npmi
+npm-fast-sync
 ```
 
 

@@ -1,26 +1,26 @@
 {
-  "name": "npmi",
+  "name": "npm-fast-sync",
   "version": "1.0.0",
   "description": "Incremental npm install with downgrade support.",
   "main": "index.js",
   "bin": {
-    "npmi": "./index-es5.js"
+    "npm-fast-sync": "./index-es5.js"
   },
   "scripts": {
-    "compile": "babel -o npmi.es5.js npmi.js",
+    "compile": "babel -o npm-fast-sync.es5.js npm-fast-sync.js",
     "prepublish": "npm run compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/onefinancial/npmi.git"
+    "url": "https://github.com/onefinancial/npm-fast-sync"
   },
   "author": "Julian Diaz <julian.diaz@onefinancialholdings.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/onefinancial/npmi/issues"
+    "url": "https://github.com/onefinancial/npm-fast-sync/issues"
   },
-  "homepage": "https://github.com/onefinancial/npmi#readme",
+  "homepage": "https://github.com/onefinancial/npm-fast-sync#readme",
   "dependencies": {
     "lodash": "^3.10.1",
     "rimraf": "^2.5.0",
