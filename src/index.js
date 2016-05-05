@@ -5,6 +5,10 @@ import path from 'path';
 import rimraf from 'rimraf';
 import Rx from 'rx';
 import semver from 'semver';
+import assignPolyfill from 'es6-object-assign';
+
+// polyfill Object.assign for legacy versions of node.
+assignPolyfill.polyfill();
 
 Rx.config.longStackSupport = true;
 
